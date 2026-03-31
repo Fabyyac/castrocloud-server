@@ -6,9 +6,8 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔹 Configurações
-app.use(cors()); // permite acessar do seu site no Vercel
-app.use(express.json({ limit: '50mb' })); // permite enviar arquivos grandes
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
 
 cloudinary.config({
   cloud_name: 'dmbeh0vvd',
@@ -28,7 +27,7 @@ app.post('/upload', async (req, res) => {
     const result = await cloudinary.uploader.upload(file, {
       folder: 'castrocloud',
       resource_type: 'auto',
-      upload_preset: 'castrocloud_public' // 🔑 usar preset unsigned
+      upload_preset: 'castrocloud_public' // 🔑 unsigned
     });
     res.json({ url: result.secure_url });
   } catch (err) {
@@ -36,7 +35,8 @@ app.post('/upload', async (req, res) => {
     res.status(500).json({ error: 'Erro no upload' });
   }
 });
-// 🔹 Start server
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
