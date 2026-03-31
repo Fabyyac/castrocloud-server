@@ -27,7 +27,8 @@ app.post('/upload', async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(file, {
       folder: 'castrocloud',
-      resource_type: 'auto'
+      resource_type: 'auto',
+      upload_preset: 'castrocloud_public' // 🔑 usar preset unsigned
     });
     res.json({ url: result.secure_url });
   } catch (err) {
@@ -35,7 +36,6 @@ app.post('/upload', async (req, res) => {
     res.status(500).json({ error: 'Erro no upload' });
   }
 });
-
 // 🔹 Start server
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
