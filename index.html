@@ -32,21 +32,26 @@
   </main>
 
   <script>
+    // 🔐 PROTEÇÃO DE LOGIN
     if (localStorage.getItem("logado") !== "true") {
       window.location.href = "login.html";
     }
 
+    // 👤 MOSTRAR NOME
     const nome = localStorage.getItem("usuario");
     document.getElementById("bemvindo").innerText = "Bem-vinda, " + nome;
 
+    // 🚪 LOGOUT
     function logout() {
       localStorage.removeItem("logado");
       localStorage.removeItem("usuario");
       window.location.href = "login.html";
     }
 
+    // ☁️ UPLOAD DE ARQUIVO
     async function uploadFile() {
-      const file = document.getElementById('fileInput').files[0];
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
 
       if (!file) {
         alert("Escolha um arquivo!");
@@ -58,20 +63,32 @@
       reader.onloadend = async () => {
         const base64 = reader.result;
 
-        const response = await fetch('https://SEU-LINK-RENDER.onrender.com/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ file: base64 })
-        });
+        try {
+          const response = await fetch('https://castrocloud-api.onrender.com/upload', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ file: base64 })
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        document.getElementById('resultado').innerHTML = `
-          <p>Arquivo enviado com sucesso!</p>
-          <a href="${data.secure_url}" target="_blank">Abrir arquivo</a>
-        `;
+          // ✅ CORREÇÃO IMPORTANTE AQUI
+          if (data.url) {
+            document.getElementById('resultado').innerHTML = `
+              <p>Arquivo enviado com sucesso!</p>
+              <a href="${data.url}" target="_blank">Abrir arquivo</a>
+            `;
+          } else {
+            alert("Erro no upload!");
+            console.error(data);
+          }
+
+        } catch (error) {
+          alert("Erro ao enviar arquivo!");
+          console.error(error);
+        }
       };
 
       reader.readAsDataURL(file);
